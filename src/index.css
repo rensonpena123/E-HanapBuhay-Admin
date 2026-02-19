@@ -2,4 +2,7 @@
 
 @theme {
   --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-dark: #1a263e;
+  --color-brand-yellow: #fbc02d;
 }
