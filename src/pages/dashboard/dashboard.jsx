@@ -1,19 +1,14 @@
 import React from 'react';
-import Sidebar from '../../components/sidebar.jsx';
-import Header from '../../components/header.jsx';
+
 
 const Dashboard = () => {
   return (
     <div className="flex h-screen bg-gray-100 font-roboto">
-      
-      {/* The Sidebar on the left */}
-      <Sidebar />
+    
 
       {/* The Right Side Container */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        
-        {/* The Header*/}
-        <Header />
+      
 
         {/* The Main Content Area */}
         <main className="flex-1 p-8 overflow-y-auto">

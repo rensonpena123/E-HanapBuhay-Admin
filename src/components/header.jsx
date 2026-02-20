@@ -1,11 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Search, Bell, CircleUser } from 'lucide-react';
 
 const Header = () => {
   return (
     <header className="h-20 bg-brand-dark flex items-center justify-between px-8 border-b-2 border-l-2 border-brand-yellow/80 shrink-0">
       
-      {/*  Search Bar */}
       <div className="relative w-100">
         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
           <Search size={18} className="text-brand-yellow" />
@@ -17,26 +17,24 @@ const Header = () => {
         />
       </div>
 
-      {/* Notifications & Profile */}
       <div className="flex items-center h-full">
         
-        {/* Notification Bell */}
         <button className="pr-6 hover:opacity-80 transition-opacity cursor-pointer">
           <Bell size={24} className="text-brand-yellow" />
         </button>
 
-        {/* Vertical Divider Line */}
         <div className="h-full border-l-2 border-brand-yellow/80"></div>
 
-        {/* Profile Section */}
-        <div className="flex items-center gap-5 pl-6 cursor-pointer hover:opacity-80 transition-opacity">
-          <CircleUser size={36} strokeWidth={1.5} className="text-brand-yellow" />
-          <div className="flex flex-col">
-            <span className="text-white font-medium text-[15px] leading-tight">Sample Profile</span>
-            <span className="text-gray-300 text-xs">System Admin</span>
-          </div>
+      <Link 
+        to="/profile" 
+        className="flex items-center gap-5 pl-6 cursor-pointer hover:opacity-80 transition-opacity active:scale-95 decoration-none"
+      >
+        <CircleUser size={36} strokeWidth={1.5} className="text-brand-yellow" />
+        <div className="flex flex-col text-left">
+          <span className="text-white font-medium text-[15px] leading-tight">Sample Profile</span>
+          <span className="text-gray-300 text-xs">System Admin</span>
         </div>
-
+      </Link>
       </div>
       
     </header>
