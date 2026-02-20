@@ -1,14 +1,18 @@
-import React from 'react';
+import React from "react";
+import { Building2, BadgeCheck, ClipboardClock, BadgeAlert } from "lucide-react";
+import StatCard from "../../components/statCard.jsx";
 
-const BusinessManagement = () => {
+export default function BusinessManagement() {
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-brand-dark mb-4">Business Management</h1>
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-        <p>This is the Business Management page.</p>
-      </div>
-    </div>
-  );
-};
+      <div className="bg-brand-dark p-6 pb-8 rounded-2xl">
+        <h1 className="text-3xl font-bold text-white mb-6">Business Management</h1>
 
-export default BusinessManagement;
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard title="Total Business" value="248" icon={Building2} />
+          <StatCard title="Verified" value="142" icon={BadgeCheck} />
+          <StatCard title="Pending" value="38" icon={ClipboardClock} />
+          <StatCard title="Suspended" value="15" icon={BadgeAlert} />
+        </div>
+      </div>
+  );
+}
