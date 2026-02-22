@@ -7,9 +7,10 @@ import * as XLSX from 'xlsx';
 import { usePerformanceData } from './performanceAnalytics/performanceData.js';
 import { useGeographicData } from './geographicAnalytics/geographicData.js';
 
-const DataExport = () => {
-  const { data: geoData } = useGeographicData();
-  const { data: perfData } = usePerformanceData();
+const DataExport = ({ filters }) => {
+  
+  const { data: geoData } = useGeographicData(filters);
+  const { data: perfData } = usePerformanceData(filters);
 
   // PDF download
   const handleDownloadPDF = () => {

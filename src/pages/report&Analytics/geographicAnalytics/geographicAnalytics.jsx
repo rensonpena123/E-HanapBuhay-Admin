@@ -20,8 +20,8 @@ ChartJS.register(
   Legend
 );
 
-const GeographicAnalytics = () => {
-  const { data, loading } = useGeographicData();
+const GeographicAnalytics = ({ filters }) => {
+  const { data, loading } = useGeographicData( filters );
 
   if (loading) return <div className="p-8 text-white">Loading Analytics...</div>;
   if (!data) return null;

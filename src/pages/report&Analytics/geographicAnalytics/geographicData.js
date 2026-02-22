@@ -1,23 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-export const useGeographicData = () => {
+export const useGeographicData = (filters) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  const isFirstLoad = useRef(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
-        
-        // --- REAL DATABASE VERSION (Uncomment later) ---
-        // const response = await fetch('/api/analytics/geographic');
-        // const result = await response.json();
-        // setData(result);
+        if (isFirstLoad.current) {
+          setLoading(true);
+          await new Promise(resolve => setTimeout(resolve, 800));
+        }
 
-        // --- MOCK DATA VERSION (Current) ---
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        const mockData = {
+        const originalData = {
           jobPosts: [
             { name: 'Plainview', value: 10, percent: '23.3%' },
             { name: 'Highway Hills', value: 20, percent: '46.5%' },
@@ -40,16 +37,41 @@ export const useGeographicData = () => {
           ]
         };
 
-        setData(mockData);
+        let filteredData = JSON.parse(JSON.stringify(originalData));
+
+        //  FILTER BY BARANGAY 
+        if (filters?.barangay && filters.barangay !== "Any") {
+           const selected = filters.barangay;
+           filteredData.jobPosts = filteredData.jobPosts.filter(item => item.name.includes(selected));
+           filteredData.applicants = filteredData.applicants.filter(item => item.name.includes(selected));
+           filteredData.engagement = filteredData.engagement.filter(item => item.name.includes(selected));
+        }
+
+        // FILTER BY EMPLOYER (Simulated Connection) 
+        if (filters?.employers && filters.employers !== "Any") {
+            filteredData.jobPosts = filteredData.jobPosts.map(item => ({
+                ...item,
+                value: Math.floor(item.value * 0.4) 
+            })).filter(item => item.value > 0);
+        }
+
+        // FILTER BY JOB TYPE (Simulated Connection) 
+        if (filters?.jobType && filters.jobType !== "Any") {
+             filteredData.jobPosts = filteredData.jobPosts.filter((_, index) => index % 2 === 0);
+        }
+
+        setData(filteredData);
       } catch (error) {
         console.error("Failed to fetch geographic data", error);
       } finally {
         setLoading(false);
+        // Mark first load as done
+        isFirstLoad.current = false;
       }
     };
 
     fetchData();
-  }, []);
+  }, [filters]); 
 
   return { data, loading };
 };

@@ -1,11 +1,15 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom'; 
 import { Search, Bell, CircleUser } from 'lucide-react';
 
 const Header = () => {
+  const location = useLocation();
+  const isProfilePage = location.pathname === '/profile';
+
   return (
     <header className="h-20 bg-brand-dark flex items-center justify-between px-8 border-b-2 border-l-2 border-brand-yellow/80 shrink-0">
       
+      {/* Search Bar */}
       <div className="relative w-100">
         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
           <Search size={18} className="text-brand-yellow" />
@@ -17,24 +21,40 @@ const Header = () => {
         />
       </div>
 
-      <div className="flex items-center h-full">
+      <div className="flex items-center h-full gap-4">
         
-        <button className="pr-6 hover:opacity-80 transition-opacity cursor-pointer">
+        <button className="hover:opacity-80 transition-opacity cursor-pointer">
           <Bell size={24} className="text-brand-yellow" />
         </button>
 
-        <div className="h-full border-l-2 border-brand-yellow/80"></div>
+        <div className="h-10 border-l-2 border-brand-yellow/80 mx-2"></div>
 
-      <Link 
-        to="/profile" 
-        className="flex items-center gap-5 pl-6 cursor-pointer hover:opacity-80 transition-opacity active:scale-95 decoration-none"
-      >
-        <CircleUser size={36} strokeWidth={1.5} className="text-brand-yellow" />
-        <div className="flex flex-col text-left">
-          <span className="text-white font-medium text-[15px] leading-tight">Sample Profile</span>
-          <span className="text-gray-300 text-xs">System Admin</span>
-        </div>
-      </Link>
+        {/* Profile Link with Active State */}
+        <Link 
+          to="/profile" 
+          className={`flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 cursor-pointer decoration-none border ${
+            isProfilePage 
+              ? "bg-brand-yellow/10 border-brand-yellow/50"
+              : "border-transparent hover:bg-white/5"      
+          }`}
+        >
+          {/* Icon fills slightly when active */}
+          <CircleUser 
+            size={36} 
+            strokeWidth={1.5} 
+            className={`text-brand-yellow transition-transform ${isProfilePage ? "fill-brand-yellow/20" : ""}`} 
+          />
+          
+          <div className="flex flex-col text-left">
+            {/* Text turns yellow when active */}
+            <span className={`font-medium text-[15px] leading-tight transition-colors ${
+              isProfilePage ? "text-brand-yellow" : "text-white"
+            }`}>
+              Sample Profile
+            </span>
+            <span className="text-gray-300 text-xs">System Admin</span>
+          </div>
+        </Link>
       </div>
       
     </header>

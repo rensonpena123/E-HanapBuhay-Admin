@@ -14,8 +14,8 @@ import { Bar } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const PerformanceAnalytics = () => {
-  const { data, loading } = usePerformanceData();
+const PerformanceAnalytics = ({ filters }) => {
+  const { data, loading } = usePerformanceData( filters );
 
   if (loading) return <div className="p-8 text-white">Loading Performance Data...</div>;
   if (!data) return null;
