@@ -22,7 +22,6 @@ export default function JmModal({ modalType, selectedJob, bulkAction, selectedId
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={closeModal}>
       <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
 
-        {/* View Details */}
         {modalType === "view" && selectedJob && (
           <>
             <div className="flex items-center gap-3 mb-4">
@@ -39,6 +38,7 @@ export default function JmModal({ modalType, selectedJob, bulkAction, selectedId
                 ["Salary", selectedJob.salary],
                 ["Applicants", selectedJob.applicants],
                 ["Posted", selectedJob.posted],
+                ["Post Date", selectedJob.postedDate],
               ].map(([k, v]) => (
                 <div key={k} className="flex justify-between border-b border-gray-100 pb-2">
                   <span className="font-semibold text-gray-600">{k}</span>
@@ -46,13 +46,10 @@ export default function JmModal({ modalType, selectedJob, bulkAction, selectedId
                 </div>
               ))}
             </div>
-            <button onClick={closeModal} className="mt-6 w-full bg-brand-dark text-white py-2 rounded-full hover:opacity-90 transition">
-              Close
-            </button>
+            <button onClick={closeModal} className="mt-6 w-full bg-brand-dark text-white py-2 rounded-full hover:opacity-90 transition">Close</button>
           </>
         )}
 
-        {/* Edit */}
         {modalType === "edit" && selectedJob && (
           <>
             <div className="flex items-center gap-3 mb-4">
@@ -81,7 +78,6 @@ export default function JmModal({ modalType, selectedJob, bulkAction, selectedId
           </>
         )}
 
-        {/* Approve - Pending only */}
         {modalType === "approve" && selectedJob && (
           <div className="flex flex-col items-center text-center">
             <div className="bg-green-100 p-4 rounded-full mb-4"><CircleCheck size={32} className="text-green-600" /></div>
@@ -95,7 +91,6 @@ export default function JmModal({ modalType, selectedJob, bulkAction, selectedId
           </div>
         )}
 
-        {/* Reject - Pending or Active */}
         {modalType === "reject" && selectedJob && (
           <div className="flex flex-col items-center text-center">
             <div className="bg-red-100 p-4 rounded-full mb-4"><CircleX size={32} className="text-red-500" /></div>
@@ -110,7 +105,6 @@ export default function JmModal({ modalType, selectedJob, bulkAction, selectedId
           </div>
         )}
 
-        {/* Renew - Expired only */}
         {modalType === "renew" && selectedJob && (
           <div className="flex flex-col items-center text-center">
             <div className="bg-blue-100 p-4 rounded-full mb-4"><Clock size={32} className="text-blue-500" /></div>
@@ -124,7 +118,6 @@ export default function JmModal({ modalType, selectedJob, bulkAction, selectedId
           </div>
         )}
 
-        {/* Reopen - Closed only */}
         {modalType === "reopen" && selectedJob && (
           <div className="flex flex-col items-center text-center">
             <div className="bg-green-100 p-4 rounded-full mb-4"><CircleCheck size={32} className="text-green-600" /></div>
@@ -138,7 +131,6 @@ export default function JmModal({ modalType, selectedJob, bulkAction, selectedId
           </div>
         )}
 
-        {/* Delete */}
         {modalType === "delete" && selectedJob && (
           <div className="flex flex-col items-center text-center">
             <div className="bg-red-100 p-4 rounded-full mb-4"><Trash2 size={32} className="text-red-500" /></div>
@@ -151,7 +143,6 @@ export default function JmModal({ modalType, selectedJob, bulkAction, selectedId
           </div>
         )}
 
-        {/* Bulk Approve */}
         {bulkAction === "approve" && (
           <div className="flex flex-col items-center text-center">
             <div className="bg-green-100 p-4 rounded-full mb-4"><CircleCheck size={32} className="text-green-600" /></div>
@@ -164,7 +155,6 @@ export default function JmModal({ modalType, selectedJob, bulkAction, selectedId
           </div>
         )}
 
-        {/* Bulk Reject */}
         {bulkAction === "reject" && (
           <div className="flex flex-col items-center text-center">
             <div className="bg-red-100 p-4 rounded-full mb-4"><CircleX size={32} className="text-red-500" /></div>
@@ -178,7 +168,6 @@ export default function JmModal({ modalType, selectedJob, bulkAction, selectedId
           </div>
         )}
 
-        {/* Bulk Delete */}
         {bulkAction === "delete" && (
           <div className="flex flex-col items-center text-center">
             <div className="bg-red-100 p-4 rounded-full mb-4"><Trash2 size={32} className="text-red-500" /></div>
