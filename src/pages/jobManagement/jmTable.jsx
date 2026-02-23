@@ -1,8 +1,3 @@
-// jmTable.jsx
-// Renders the jobs data table with smart fixed-position dropdown per row.
-// Posted column shows both relative time and exact date.
-// Handles bulk action bar and pagination footer.
-
 import React, { useRef, useEffect, useState } from "react";
 import {
   MoreHorizontal, Eye, Pencil, CircleCheck, CircleX,

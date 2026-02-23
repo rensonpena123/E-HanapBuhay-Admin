@@ -1,7 +1,3 @@
-// jobHelpers.jsx
-// Constants, mock data, filter logic, and pagination for Job Management.
-// Replace sampleJobs with real API calls when PostgreSQL is ready.
-
 export const ITEMS_PER_PAGE = 7;
 
 export const sampleJobs = [

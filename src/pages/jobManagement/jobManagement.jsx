@@ -1,7 +1,3 @@
-// jobManagement.jsx
-// Main Job Management page. Orchestrates all state and passes data to child components.
-// Date range filter uses postedDate field from each job for accurate filtering.
-
 import React, { useState, useEffect, useRef } from "react";
 import {
   Briefcase, CheckCircle, Clock, XCircle,
