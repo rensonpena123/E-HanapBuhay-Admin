@@ -28,13 +28,6 @@ export const useGeographicData = (filters) => {
             { name: 'Plainview', value: 730, color: '#f87171' },   
             { name: 'Wack-Wack', value: 780, color: '#ef4444' },
           ],
-          engagement: [
-            { rank: 1, name: 'Highway Hills', sessions: 30, time: '8.2 min', status: 'High' },
-            { rank: 2, name: 'Barangay Plainview', sessions: 15, time: '7.0 min', status: 'High' },
-            { rank: 3, name: 'Barangay Addition Hills', sessions: 20, time: '3.5 min', status: 'Moderate' },
-            { rank: 4, name: 'Highway Hulo', sessions: 10, time: '2.8 min', status: 'Moderate' },
-            { rank: 5, name: 'Wack-wack Greenhills', sessions: 4, time: '1.3 min', status: 'Low' },
-          ]
         };
 
         let filteredData = JSON.parse(JSON.stringify(originalData));
@@ -44,7 +37,6 @@ export const useGeographicData = (filters) => {
            const selected = filters.barangay;
            filteredData.jobPosts = filteredData.jobPosts.filter(item => item.name.includes(selected));
            filteredData.applicants = filteredData.applicants.filter(item => item.name.includes(selected));
-           filteredData.engagement = filteredData.engagement.filter(item => item.name.includes(selected));
         }
 
         // FILTER BY EMPLOYER (Simulated Connection) 
@@ -65,7 +57,6 @@ export const useGeographicData = (filters) => {
         console.error("Failed to fetch geographic data", error);
       } finally {
         setLoading(false);
-        // Mark first load as done
         isFirstLoad.current = false;
       }
     };

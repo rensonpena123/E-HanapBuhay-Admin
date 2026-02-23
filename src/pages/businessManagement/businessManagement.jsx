@@ -1,19 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Building2, 
-  ShieldCheck, 
-  Clock, 
-  AlertOctagon, 
-  Edit,
-  Eye, 
-  CheckCircle, 
-  XCircle,
-  ArrowUpAZ,   
-  ArrowDownAZ
+  Building2, ShieldCheck, Clock, AlertOctagon, Edit, Eye, CheckCircle, XCircle, ArrowUpAZ, ArrowDownAZ,
+  UserCheck, UserX, AlertTriangle 
 } from 'lucide-react';
 import StatCard from "../../components/statCard.jsx";
 import { useBusinessData } from './useBusinessData.js';
 import EditBusinessModal from './editBusinessInfo.jsx';
+import DocumentViewerModal from './documentViewerModal.jsx';
 
 const BusinessManagement = () => {
   const { data, loading } = useBusinessData();
@@ -25,12 +18,15 @@ const BusinessManagement = () => {
   const [sortBy, setSortBy] = useState('name'); 
   const [sortOrder, setSortOrder] = useState('asc'); 
 
+  const [viewDoc, setViewDoc] = useState(null);
+
   useEffect(() => {
     if (data?.businesses) {
       setLocalBusinessList(data.businesses);
     }
   }, [data]);
 
+  // Sort Logic 
   const sortedBusinessList = [...localBusinessList].sort((a, b) => {
     let valA = a[sortBy];
     let valB = b[sortBy];
@@ -38,8 +34,7 @@ const BusinessManagement = () => {
     if (sortBy === 'dateRegistered') {
       valA = new Date(a.dateRegistered).getTime();
       valB = new Date(b.dateRegistered).getTime();
-    }
-    else if (typeof valA === 'string') {
+    } else if (typeof valA === 'string') {
       valA = valA.toLowerCase();
       valB = valB.toLowerCase();
     }
@@ -51,12 +46,43 @@ const BusinessManagement = () => {
 
   const selectedBusiness = sortedBusinessList.find(b => b.id === selectedId) || sortedBusinessList[0];
 
+  // Handlers 
   const handleSaveChanges = (updatedBusiness) => {
     const updatedList = localBusinessList.map(b => 
       b.id === updatedBusiness.id ? updatedBusiness : b
     );
     setLocalBusinessList(updatedList);
   };
+
+  const handleStatusChange = (newStatus) => {
+    if (!selectedBusiness) return;
+    const updatedBusiness = {
+      ...selectedBusiness,
+      status: newStatus,
+      statusHistory: {
+        changedBy: "System Admin (You)",
+        lastChanged: new Date().toLocaleString()
+      }
+    };
+    const updatedList = localBusinessList.map(b => 
+      b.id === selectedBusiness.id ? updatedBusiness : b
+    );
+    setLocalBusinessList(updatedList);
+  };
+
+  const handleDocumentAction = (doc, newStatus) => {
+    if (!selectedBusiness) return;
+
+    const updatedDocuments = selectedBusiness.documents.map(d => 
+        d.id === doc.id ? { ...d, status: newStatus } : d
+    );
+
+    const updatedBusiness = { ...selectedBusiness, documents: updatedDocuments };
+    
+    handleSaveChanges(updatedBusiness);
+  };
+
+  const areAllDocsVerified = selectedBusiness?.documents?.every(doc => doc.status === 'Verified');
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -70,7 +96,7 @@ const BusinessManagement = () => {
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-      {/* Header*/}
+      {/* Header */}
       <div className="bg-brand-dark p-6 pb-8 rounded-2xl">
         <h1 className="text-3xl font-bold text-white mb-6">Business Management</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -82,42 +108,25 @@ const BusinessManagement = () => {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6 h-[800px]">
-        
-        {/* LEFT PANEL: Business List */}
+        {/* Left Panel: List */}
         <div className="w-full lg:w-1/3 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col">
-          
           <div className="p-4 border-b border-gray-100 flex flex-col gap-3 bg-gray-50 rounded-t-xl">
-            
             <div className="flex justify-between items-center">
               <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Business List</span>
               <span className="text-xs font-bold text-gray-500 bg-gray-200 px-2 py-1 rounded-full">Items: {sortedBusinessList.length}</span>
             </div>
-
             <div className="flex gap-2">
-              {/* Dropdown for Criteria */}
-              <select 
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="flex-1 text-sm text-gray-700 bg-white border border-gray-300 px-3 py-2 rounded-lg shadow-sm outline-none focus:border-brand-yellow cursor-pointer"
-              >
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="flex-1 text-sm text-gray-700 bg-white border border-gray-300 px-3 py-2 rounded-lg shadow-sm outline-none focus:border-brand-yellow cursor-pointer">
                 <option value="name">Name</option>
                 <option value="dateRegistered">Date Registered</option>
                 <option value="status">Status</option>
                 <option value="type">Business Type</option>
               </select>
-
-              {/* Button for Direction */}
-              <button 
-                onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-                className="bg-white border border-gray-300 px-3 py-2 rounded-lg shadow-sm hover:bg-gray-100 transition text-gray-600"
-                title={sortOrder === 'asc' ? "Ascending (A-Z)" : "Descending (Z-A)"}
-              >
+              <button onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')} className="bg-white border border-gray-300 px-3 py-2 rounded-lg shadow-sm hover:bg-gray-100 transition text-gray-600">
                 {sortOrder === 'asc' ? <ArrowUpAZ size={18} /> : <ArrowDownAZ size={18} />}
               </button>
             </div>
-
           </div>
-
           <div className="overflow-y-auto flex-1 p-2 space-y-2">
             {loading ? <div className="p-4 text-center text-gray-500">Loading list...</div> : 
               sortedBusinessList.map((business) => (
@@ -136,9 +145,8 @@ const BusinessManagement = () => {
           </div>
         </div>
 
-        {/* RIGHT PANEL */}
+        {/* Right Panel: Details */}
         <div className="w-full lg:w-2/3 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
-          {/* Tabs */}
           <div className="flex border-b border-gray-200">
             <button onClick={() => setActiveTab("Profile")} className={`flex-1 py-4 text-sm font-bold text-center border-b-2 transition-colors ${activeTab === "Profile" ? 'border-brand-yellow text-brand-yellow bg-yellow-50/50' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>Profile & Verification</button>
             <button onClick={() => setActiveTab("Status")} className={`flex-1 py-4 text-sm font-bold text-center border-b-2 transition-colors ${activeTab === "Status" ? 'border-brand-yellow text-brand-yellow bg-yellow-50/50' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>Status Control</button>
@@ -149,20 +157,13 @@ const BusinessManagement = () => {
           ) : (
             <div className="p-6 overflow-y-auto flex-1 space-y-8">
               
+              {/* PROFILE*/}
               {activeTab === "Profile" && (
                 <>
                   <div>
                     <h3 className="text-lg font-bold text-gray-800 mb-4">Business Information</h3>
                     <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 relative">
-                      
-                      {/* Edit button*/}
-                      <button 
-                        onClick={() => setIsEditModalOpen(true)}
-                        className="absolute top-4 right-4 flex items-center gap-1 bg-green-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-green-800 transition cursor-pointer"
-                      >
-                        <Edit size={12} /> Edit
-                      </button>
-
+                      <button onClick={() => setIsEditModalOpen(true)} className="absolute top-4 right-4 flex items-center gap-1 bg-green-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-green-800 transition cursor-pointer"><Edit size={12} /> Edit</button>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8">
                         <InfoItem label="Business Name" value={selectedBusiness.name} />
                         <InfoItem label="Email address" value={selectedBusiness.email} />
@@ -175,7 +176,6 @@ const BusinessManagement = () => {
                       </div>
                     </div>
                   </div>
-                  {/* Documents Section  */}
                   <div>
                     <h3 className="text-lg font-bold text-gray-800 mb-4">Documents</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -189,7 +189,12 @@ const BusinessManagement = () => {
                             {doc.status !== 'Missing' && (
                               <>
                                 <button className={`flex items-center gap-1 text-[10px] font-bold px-3 py-1.5 rounded-lg text-white transition ${doc.status === 'Verified' ? 'bg-red-400 hover:bg-red-500' : 'bg-yellow-500 hover:bg-yellow-600'}`}>{doc.status === 'Verified' ? <XCircle size={12}/> : <CheckCircle size={12}/>}{doc.status === 'Verified' ? 'Unverify' : 'Verify'}</button>
-                                <button className="flex items-center gap-1 bg-gray-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-gray-600 transition"><Eye size={12}/> View</button>
+                                <button 
+                                  onClick={() => setViewDoc(doc)} 
+                                  className="flex items-center gap-1 bg-gray-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-gray-600 transition"
+                                >
+                                  <Eye size={12}/> View
+                                </button>
                               </>
                             )}
                           </div>
@@ -200,14 +205,48 @@ const BusinessManagement = () => {
                 </>
               )}
 
+              {/* STATUS CONTROL*/}
               {activeTab === "Status" && (
                  <div>
                   <h3 className="text-lg font-bold text-gray-800 mb-4">Account Status Control</h3>
                   <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                       <div><p className="text-xs text-gray-500 mb-2">Account Status:</p><span className={`text-xs font-bold px-4 py-1.5 rounded-full ${getStatusColor(selectedBusiness.status)}`}>{selectedBusiness.status}</span></div>
                       <div><p className="text-xs text-gray-500 mb-1">Changed By:</p><p className="text-sm font-bold text-gray-800">{selectedBusiness.statusHistory?.changedBy || "System"}</p></div>
                       <div className="md:col-span-2"><p className="text-xs text-gray-500 mb-1">Last Status Changed:</p><p className="text-sm font-bold text-gray-800">{selectedBusiness.statusHistory?.lastChanged || "N/A"}</p></div>
+                    </div>
+                    <div className="border-t border-gray-200 pt-6">
+                      <p className="text-xs font-bold text-gray-500 uppercase mb-4">Actions</p>
+                      {!areAllDocsVerified && (
+                        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center gap-3 text-yellow-800 text-xs font-bold">
+                          <AlertTriangle size={16} className="text-yellow-600"/>
+                          <span>Cannot activate: All documents must be verified in the Profile tab first.</span>
+                        </div>
+                      )}
+                      <div className="flex gap-4">
+                        <button 
+                          onClick={() => handleStatusChange('Verified')}
+                          disabled={selectedBusiness.status === 'Verified' || !areAllDocsVerified}
+                          className={`flex items-center gap-2 px-6 py-3 rounded-lg font-bold text-sm transition-all shadow-sm ${
+                            selectedBusiness.status === 'Verified' || !areAllDocsVerified
+                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                              : 'bg-green-600 text-white hover:bg-green-700 hover:shadow-md'
+                          }`}
+                        >
+                          <UserCheck size={18} /> Activate Account
+                        </button>
+                        <button 
+                          onClick={() => handleStatusChange('Suspended')}
+                          disabled={selectedBusiness.status === 'Suspended'}
+                          className={`flex items-center gap-2 px-6 py-3 rounded-lg font-bold text-sm transition-all shadow-sm ${
+                            selectedBusiness.status === 'Suspended' 
+                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                              : 'bg-red-600 text-white hover:bg-red-700 hover:shadow-md'
+                          }`}
+                        >
+                          <UserX size={18} /> Suspend Account
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -217,13 +256,15 @@ const BusinessManagement = () => {
         </div>
       </div>
 
-      <EditBusinessModal 
-        isOpen={isEditModalOpen} 
-        onClose={() => setIsEditModalOpen(false)} 
-        business={selectedBusiness}
-        onSave={handleSaveChanges}
+      <EditBusinessModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} business={selectedBusiness} onSave={handleSaveChanges} />
+      
+      <DocumentViewerModal 
+        isOpen={!!viewDoc}
+        onClose={() => setViewDoc(null)}
+        document={viewDoc}
+        onVerify={(doc) => handleDocumentAction(doc, 'Verified')}
+        onReject={(doc) => handleDocumentAction(doc, 'Pending')} 
       />
-
     </div>
   );
 };

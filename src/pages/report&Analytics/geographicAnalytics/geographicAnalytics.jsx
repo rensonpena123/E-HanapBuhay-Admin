@@ -102,46 +102,6 @@ const GeographicAnalytics = ({ filters }) => {
             </div>
           </div>
         </div>
-
-        {/* Bottom Row: Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-4 border-b border-gray-100">
-            <h3 className="font-bold text-gray-800">Barangay Engagement</h3>
-          </div>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 text-gray-600 font-bold border-b">
-                <tr>
-                  <th className="px-6 py-3 text-brand-yellow">Rank</th>
-                  <th className="px-6 py-3 text-brand-yellow">Barangay Name</th>
-                  <th className="px-6 py-3 text-brand-yellow">Session Counts</th>
-                  <th className="px-6 py-3 text-brand-yellow">Avg. Time per Sessions</th>
-                  <th className="px-6 py-3 text-brand-yellow">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {data.engagement.map((row) => (
-                  <tr key={row.rank} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 font-medium">{row.rank}</td>
-                    <td className="px-6 py-4">{row.name}</td>
-                    <td className="px-6 py-4">{row.sessions}</td>
-                    <td className="px-6 py-4">{row.time}</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium 
-                        ${row.status === 'High' ? 'bg-green-100 text-green-700' : 
-                          row.status === 'Moderate' ? 'bg-yellow-100 text-yellow-700' : 
-                          'bg-red-100 text-red-700'}`}>
-                        {row.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
       </div>
     </div>
   );

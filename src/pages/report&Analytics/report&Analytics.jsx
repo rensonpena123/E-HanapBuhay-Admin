@@ -7,6 +7,7 @@ import GeographicAnalytics from './geographicAnalytics/geographicAnalytics.jsx';
 import PerformanceAnalytics from './performanceAnalytics/performanceAnalytics.jsx';
 import DataExport from './dataExport.jsx';
 import { usePerformanceData } from './performanceAnalytics/performanceData.js';
+import IndustryDemand from './industryAnalytics/industryDemand.jsx'; 
 
 export default function ReportsAndAnalytics() {
 
@@ -66,7 +67,7 @@ export default function ReportsAndAnalytics() {
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="p-6 space-y-6">
           <FilterBar onClear={handleClear}>
              <div className="flex items-end gap-2">
               <FilterItem label="Range Date">
@@ -125,6 +126,8 @@ export default function ReportsAndAnalytics() {
           <GeographicAnalytics filters={currentFilters}/>
 
           <PerformanceAnalytics filters={currentFilters}/>
+
+          <IndustryDemand filters={currentFilters} />
 
           <DataExport filters={currentFilters}/>
       </div>
