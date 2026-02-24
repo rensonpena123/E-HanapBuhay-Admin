@@ -25,7 +25,6 @@ const Settings = () => {
     { id: 4, job: "Project Manager", barangay: "Barangka Drive" },
   ]);
 
-  // Modal Input States
   const [modalJob, setModalJob] = useState("");
   const [modalBarangay, setModalBarangay] = useState("");
   const [modalDistrict, setModalDistrict] = useState("");
@@ -43,6 +42,9 @@ const Settings = () => {
   ]);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
+
+  // Style Constant for the White Dropdowns
+  const selectClass = "w-full appearance-none px-4 py-2 border-none rounded-xl text-sm bg-white text-black outline-none pr-10 font-medium cursor-pointer";
 
   // --- 4. HANDLERS ---
   const openAddModal = () => {
@@ -63,7 +65,6 @@ const Settings = () => {
 
   const handleSaveJob = () => {
     if (!modalJob || !modalBarangay) return;
-
     if (editingId) {
       setJobsData(jobsData.map(j => j.id === editingId ? { ...j, job: modalJob, barangay: modalBarangay } : j));
     } else {
@@ -74,10 +75,11 @@ const Settings = () => {
 
   const deleteJob = (id) => setJobsData(jobsData.filter(j => j.id !== id));
 
-  // Logic for dynamic barangay list inside Modal
-  const modalAvailableBarangays = Object.keys(DISTRICT_MAP).filter(brgy => 
-    !modalDistrict || DISTRICT_MAP[brgy].toString() === modalDistrict
-  );
+  const getBarangaysByDistrict = (district) => {
+    return Object.keys(DISTRICT_MAP).filter(brgy => 
+      district === "All" || DISTRICT_MAP[brgy].toString() === district
+    ).sort();
+  };
 
   const filteredJobs = jobsData.filter((item) => {
     const matchesSearch = item.job.toLowerCase().includes(searchTerm.toLowerCase());
@@ -87,7 +89,7 @@ const Settings = () => {
   });
 
   return (
-    <div className="p-6 bg-[#f3f4f6] min-h-screen font-sans text-gray-800">
+    <div className="p-8 bg-[#f3f4f6] min-h-screen font-sans text-gray-800 space-y-6">
       
       {/* MODAL OVERLAY */}
       {isModalOpen && (
@@ -101,7 +103,6 @@ const Settings = () => {
                 <X size={24} />
               </button>
             </div>
-
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-bold mb-1">District</label>
@@ -115,7 +116,6 @@ const Settings = () => {
                   <option value="2">District 2</option>
                 </select>
               </div>
-
               <div>
                 <label className="block text-sm font-bold mb-1">Barangay</label>
                 <select 
@@ -125,27 +125,21 @@ const Settings = () => {
                   className="w-full px-4 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-amber-400 disabled:bg-gray-50"
                 >
                   <option value="">Select Barangay</option>
-                  {modalAvailableBarangays.sort().map(brgy => (
+                  {getBarangaysByDistrict(modalDistrict).map(brgy => (
                     <option key={brgy} value={brgy}>{brgy}</option>
                   ))}
                 </select>
               </div>
-
               <div>
                 <label className="block text-sm font-bold mb-1">Job Title</label>
                 <input 
-                  type="text" 
-                  value={modalJob}
+                  type="text" value={modalJob}
                   onChange={(e) => setModalJob(e.target.value)}
                   placeholder="e.g. Graphic Designer"
                   className="w-full px-4 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-amber-400"
                 />
               </div>
-
-              <button 
-                onClick={handleSaveJob}
-                className="w-full bg-amber-400 hover:bg-amber-500 text-white font-bold py-3 rounded-xl transition-colors mt-4"
-              >
+              <button onClick={handleSaveJob} className="w-full bg-amber-400 hover:bg-amber-500 text-white font-bold py-3 rounded-xl transition-colors mt-4">
                 {editingId ? 'Save Changes' : 'Confirm Add'}
               </button>
             </div>
@@ -153,65 +147,85 @@ const Settings = () => {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto space-y-4">
-        {/* HEADER */}
-        <div className="bg-[#1e293b] rounded-t-2xl p-8 shadow-md">
-          <h1 className="text-white text-2xl font-semibold mb-6">System Configuration</h1>
-          <div className="flex gap-4">
-            {['Master Data Management', 'Content Management System', 'Audit Logs'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-6 py-2 rounded-xl text-sm font-medium transition-all border-2 ${
-                  activeTab === tab ? 'border-amber-400 text-amber-400 bg-[#2d3a4d]' : 'border-transparent text-gray-400 bg-[#334155] hover:text-white'
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
+      {/* BOX 1: HEADER SECTION */}
+      <div className="bg-[#1e293b] rounded-2xl p-8 shadow-md">
+        <h1 className="text-white text-2xl font-semibold mb-6">System Configuration</h1>
+        <div className="flex gap-4">
+          {['Master Data Management', 'Content Management System', 'Audit Logs'].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-6 py-2 rounded-xl text-sm font-medium transition-all border-2 ${
+                activeTab === tab ? 'border-amber-400 text-amber-400 bg-[#2d3a4d]' : 'border-transparent text-gray-400 bg-[#334155] hover:text-white'
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
         </div>
+      </div>
 
-        <div className="bg-white rounded-b-2xl border border-gray-200 shadow-sm min-h-[600px] p-8">
-          
-          {activeTab === 'Master Data Management' && (
-            <div className="animate-in fade-in">
-              <div className="flex flex-wrap gap-3 mb-8 items-center">
-                <div className="relative">
-                  <select 
-                    value={filterDistrict}
-                    onChange={(e) => { setFilterDistrict(e.target.value); setFilterBarangay("All"); }}
-                    className="appearance-none px-4 py-2 border border-gray-300 rounded-xl text-sm bg-white pr-10"
-                  >
-                    <option value="All">Filter by District</option>
-                    <option value="1">District 1</option>
-                    <option value="2">District 2</option>
-                  </select>
-                  <ListFilter size={14} className="absolute right-3 top-3 text-gray-400" />
-                </div>
+      {/* BOX 2: FILTER & SEARCH BOX */}
+      {activeTab === 'Master Data Management' && (
+        <div className="bg-[#1e293b] p-6 rounded-2xl shadow-lg flex flex-wrap gap-4 items-center">
+            {/* District Filter - Background White, Text Black */}
+            <div className="relative min-w-[180px]">
+              <select 
+                value={filterDistrict}
+                onChange={(e) => { setFilterDistrict(e.target.value); setFilterBarangay("All"); }}
+                className={selectClass}
+              >
+                <option value="All">District Filter</option>
+                <option value="1">District 1</option>
+                <option value="2">District 2</option>
+              </select>
+              <ListFilter size={14} className="absolute right-3 top-3 text-gray-500 pointer-events-none" />
+            </div>
 
-                <div className="flex-1 relative">
-                  <input 
-                    type="text" 
-                    placeholder="Search Job Title..." 
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm outline-none focus:ring-1 focus:ring-amber-400 pl-10" 
-                  />
-                  <Search size={16} className="absolute left-3 top-2.5 text-gray-400" />
-                </div>
+            {/* Barangay Filter - Background White, Text Black */}
+            <div className="relative min-w-[200px]">
+              <select 
+                value={filterBarangay}
+                onChange={(e) => setFilterBarangay(e.target.value)}
+                className={selectClass}
+              >
+                <option value="All">Select Barangay</option>
+                {getBarangaysByDistrict(filterDistrict).map(brgy => (
+                  <option key={brgy} value={brgy}>{brgy}</option>
+                ))}
+              </select>
+              <ChevronDown size={14} className="absolute right-3 top-3 text-gray-500 pointer-events-none" />
+            </div>
 
-                <button 
-                  onClick={openAddModal}
-                  className="flex items-center gap-2 px-6 py-2 border border-gray-300 rounded-xl text-sm font-medium hover:bg-gray-50"
-                >
-                  Add <Plus size={16} />
-                </button>
-              </div>
+            {/* Search Input - Remains Dark for contrast */}
+            <div className="flex-1 relative min-w-[250px]">
+              <input 
+                type="text" 
+                placeholder="Enter Job Category Name" 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-2 bg-[#334155] text-white rounded-xl text-sm outline-none border-none pl-10 placeholder-gray-400" 
+              />
+              <Search size={16} className="absolute left-3 top-2.5 text-gray-400" />
+            </div>
 
-              <TableHeader columns={['Jobs', 'Barangay']} />
-              <div className="divide-y divide-gray-100">
-                {filteredJobs.map((item) => (
+            <button 
+              onClick={openAddModal}
+              className="flex items-center gap-2 px-8 py-2 bg-white text-[#1e293b] rounded-xl text-sm font-bold hover:bg-gray-100 transition-colors"
+            >
+              Add <Plus size={16} />
+            </button>
+        </div>
+      )}
+
+      {/* BOX 3: MAIN CONTENT BOX */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm min-h-[500px] p-8">
+        {activeTab === 'Master Data Management' && (
+          <div className="animate-in fade-in">
+            <TableHeader columns={['Jobs', 'Barangay']} />
+            <div className="divide-y divide-gray-100">
+              {filteredJobs.length > 0 ? (
+                filteredJobs.map((item) => (
                   <DataRow 
                     key={item.id} 
                     label={item.job} 
@@ -219,47 +233,54 @@ const Settings = () => {
                     onDelete={() => deleteJob(item.id)}
                     onEdit={() => openEditModal(item)}
                   />
-                ))}
-              </div>
+                ))
+              ) : (
+                <div className="py-20 text-center text-gray-400 font-medium">No matching records found.</div>
+              )}
             </div>
-          )}
+          </div>
+        )}
 
-          {/* FAQ Logic remains consistent with your previous functional update */}
-          {activeTab === 'Content Management System' && (
-            <div className="animate-in fade-in">
-              <h2 className="text-amber-500 font-bold text-lg mb-6 uppercase tracking-wide">Manage FAQS</h2>
-              <div className="space-y-4 mb-10 max-w-4xl">
+        {activeTab === 'Content Management System' && (
+          <div className="animate-in fade-in">
+            <h2 className="text-amber-500 font-bold text-lg mb-6 uppercase tracking-wide">Manage FAQS</h2>
+            <div className="space-y-4 mb-10 max-w-4xl">
+              <div>
+                <label className="block text-xs font-bold text-gray-500 mb-1 ml-1 uppercase">Question</label>
                 <input 
                   type="text" value={question} onChange={(e)=>setQuestion(e.target.value)}
-                  placeholder="Enter FAQ Question" className="w-full px-4 py-2 border rounded-lg text-sm" 
+                  placeholder="Enter FAQ Question" className="w-full px-4 py-2 border rounded-lg text-sm outline-none focus:ring-1 focus:ring-amber-400" 
                 />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 mb-1 ml-1 uppercase">Answer</label>
                 <textarea 
                   rows="4" value={answer} onChange={(e)=>setAnswer(e.target.value)}
-                  placeholder="Enter FAQ Answer" className="w-full px-4 py-2 border rounded-lg text-sm resize-none" 
+                  placeholder="Enter FAQ Answer" className="w-full px-4 py-2 border rounded-lg text-sm resize-none outline-none focus:ring-1 focus:ring-amber-400" 
                 />
-                <button 
-                  onClick={() => { if(question && answer) { setFaqs([{id: Date.now(), question, answer}, ...faqs]); setQuestion(""); setAnswer(""); }}}
-                  className="bg-amber-400 text-white px-6 py-1.5 rounded-full text-sm font-bold flex items-center gap-1"
-                >
-                  Add <Plus size={16} />
-                </button>
               </div>
-              <div className="space-y-6">
-                {faqs.map(f => (
-                  <div key={f.id} className="flex justify-between items-start group border-b border-gray-50 pb-4">
-                    <div>
-                      <h4 className="font-bold">{f.question}</h4>
-                      <p className="text-gray-500 text-sm">{f.answer}</p>
-                    </div>
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                       <ActionIcons onDelete={() => setFaqs(faqs.filter(x => x.id !== f.id))} />
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <button 
+                onClick={() => { if(question && answer) { setFaqs([{id: Date.now(), question, answer}, ...faqs]); setQuestion(""); setAnswer(""); }}}
+                className="bg-amber-400 text-white px-8 py-2 rounded-full text-sm font-bold flex items-center gap-2 shadow-lg hover:bg-amber-500 transition-colors"
+              >
+                Add <Plus size={16} />
+              </button>
             </div>
-          )}
-        </div>
+            <div className="space-y-6">
+              {faqs.map(f => (
+                <div key={f.id} className="flex justify-between items-start group border-b border-gray-50 pb-4">
+                  <div>
+                    <h4 className="font-bold text-gray-800">{f.question}</h4>
+                    <p className="text-gray-500 text-sm">{f.answer}</p>
+                  </div>
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                     <ActionIcons onDelete={() => setFaqs(faqs.filter(x => x.id !== f.id))} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -275,7 +296,7 @@ const TableHeader = ({ columns }) => (
 const ActionIcons = ({ onEdit, onDelete }) => (
   <div className="flex items-center gap-3">
     {onEdit && (
-      <button onClick={onEdit} className="hover:text-blue-600 transition-transform hover:scale-110">
+      <button onClick={onEdit} className="text-gray-400 hover:text-blue-600 transition-transform hover:scale-110">
         <UserRoundPen size={20} strokeWidth={2.5} />
       </button>
     )}
